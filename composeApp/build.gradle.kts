@@ -76,7 +76,7 @@ kotlin {
 
             //PreCompose
             api("moe.tlaster:precompose:1.5.10")
-            //api("moe.tlaster:precompose-molecule:1.5.10")
+                //  api("moe.tlaster:precompose-molecule:1.5.10")
             api("moe.tlaster:precompose-viewmodel:1.5.10")
             api("moe.tlaster:precompose-koin:1.5.10")
 

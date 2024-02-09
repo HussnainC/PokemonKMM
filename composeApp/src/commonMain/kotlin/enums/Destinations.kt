@@ -2,5 +2,6 @@ package enums
 
 enum class Destinations {
     Splash,
-    Home;
+    Home,
+    Detail;
 }

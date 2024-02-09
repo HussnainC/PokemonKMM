@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,14 +54,18 @@ import com.kmpalette.loader.NetworkLoader
 import com.kmpalette.rememberDominantColorState
 import components.ColorBackground
 import components.PokemonWaterMark
+import enums.Destinations
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import models.Pokemons
 import models.Result
 import moe.tlaster.precompose.koin.koinViewModel
 import moe.tlaster.precompose.navigation.Navigator
 import sealdClasses.DataLoader
+import utils.UrlHelper
 import viewModels.PikaViewModel
 
 @Composable
@@ -68,6 +73,7 @@ fun MainScreen(
     navigator: Navigator,
     viewModel: PikaViewModel = koinViewModel(vmClass = PikaViewModel::class)
 ) {
+
     DisposableEffect(key1 = Unit) {
         viewModel.loadAllPokemon()
         onDispose {
@@ -139,7 +145,12 @@ fun MainScreen(
                         contentPadding = PaddingValues(horizontal = 15.dp, vertical = 5.dp)
                     ) {
                         items(pokemons, key = Result::id) {
-                            PokiItem(it)
+                            PokiItem(it, onItemClick = { model ->
+                                viewModel.selectPokemon(model)
+                                navigator.navigate(
+                                    Destinations.Detail.name
+                                )
+                            })
                         }
                     }
                 }
@@ -152,7 +163,7 @@ fun MainScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PokiItem(item: Result) {
+private fun PokiItem(item: Result, onItemClick: (Result) -> Unit) {
     val counter by remember {
         derivedStateOf {
             if (item.id < 10) {
@@ -166,12 +177,7 @@ fun PokiItem(item: Result) {
     }
     val url by remember {
         derivedStateOf {
-            val splits = item.url?.split("/") ?: listOf()
-            if (splits.isNotEmpty()) {
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${splits[splits.lastIndex - 1]}.png"
-            } else {
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
-            }
+            UrlHelper.getImageUrl(item.url)
         }
     }
 
@@ -183,13 +189,14 @@ fun PokiItem(item: Result) {
     }
 
 
+
     Card(
         modifier = Modifier.padding(vertical = 5.dp, horizontal = 5.dp).fillMaxWidth()
             .height(130.dp),
         elevation = 2.dp,
         shape = RoundedCornerShape(15.dp),
         onClick = {
-
+            onItemClick(item)
         }
     ) {
         Box(

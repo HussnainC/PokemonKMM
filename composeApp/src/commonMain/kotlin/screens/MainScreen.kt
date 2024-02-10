@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -36,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +58,6 @@ import enums.Destinations
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import models.Pokemons
 import models.Result
 import moe.tlaster.precompose.koin.koinViewModel
@@ -107,7 +105,7 @@ fun MainScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    modifier = Modifier.padding(top = 20.dp).fillMaxWidth()
+                    modifier = Modifier.padding(top = 40.dp).fillMaxWidth()
                         .padding(horizontal = 12.dp),
                     text = "Pokedex",
                     style = MaterialTheme.typography.h4,
@@ -145,8 +143,8 @@ fun MainScreen(
                         contentPadding = PaddingValues(horizontal = 15.dp, vertical = 5.dp)
                     ) {
                         items(pokemons, key = Result::id) {
-                            PokiItem(it, onItemClick = { model ->
-                                viewModel.selectPokemon(model)
+                            PokiItem(it, onItemClick = { model, color ->
+                                viewModel.selectPokemon(model, color)
                                 navigator.navigate(
                                     Destinations.Detail.name
                                 )
@@ -163,7 +161,7 @@ fun MainScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun PokiItem(item: Result, onItemClick: (Result) -> Unit) {
+private fun PokiItem(item: Result, onItemClick: (Result, Color) -> Unit) {
     val counter by remember {
         derivedStateOf {
             if (item.id < 10) {
@@ -196,7 +194,7 @@ private fun PokiItem(item: Result, onItemClick: (Result) -> Unit) {
         elevation = 2.dp,
         shape = RoundedCornerShape(15.dp),
         onClick = {
-            onItemClick(item)
+            onItemClick(item, paletteState.color)
         }
     ) {
         Box(

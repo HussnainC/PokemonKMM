@@ -16,6 +16,7 @@ import org.koin.compose.KoinApplication
 
 @Composable
 fun NavigationContent() = PreComposeApp {
+
     KoinApplication(moduleList = {
         listOf(singleModule, factoryModule)
     }, content = {

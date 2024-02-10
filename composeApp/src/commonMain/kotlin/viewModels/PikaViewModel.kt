@@ -1,6 +1,6 @@
 package viewModels
 
-import io.ktor.util.logging.KtorSimpleLogger
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,9 +19,11 @@ import utils.DataHolder
 class PikaViewModel(private val apiRepository: ApiRepository, private val dataHolder: DataHolder) :
     ViewModel() {
     val selectedPokemon: MutableStateFlow<Result?> = MutableStateFlow(dataHolder.selectedPokemon)
+    val selectedColor: MutableStateFlow<Color> = MutableStateFlow(dataHolder.pokemonColor)
 
     private val _pokemons = MutableStateFlow<DataLoader<Pokemons>>(DataLoader.Init)
     val pokemons = _pokemons.asStateFlow()
+
 
     fun loadAllPokemon() = viewModelScope.launch {
         if (pokemons.value is DataLoader.Init)
@@ -38,7 +40,8 @@ class PikaViewModel(private val apiRepository: ApiRepository, private val dataHo
         }
     }
 
-    fun selectPokemon(model: Result) {
+    fun selectPokemon(model: Result, color: Color) {
+        dataHolder.pokemonColor = color
         dataHolder.selectedPokemon = model
     }
 }

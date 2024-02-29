@@ -21,6 +21,9 @@ class PikaViewModel(private val apiRepository: ApiRepository, private val dataHo
     val selectedPokemon: MutableStateFlow<Result?> = MutableStateFlow(dataHolder.selectedPokemon)
     val selectedColor: MutableStateFlow<Color> = MutableStateFlow(dataHolder.pokemonColor)
 
+    private val _selectedCategory: MutableStateFlow<String> = MutableStateFlow("Category 1")
+    val selectedCategory = _selectedCategory.asStateFlow()
+
     private val _pokemons = MutableStateFlow<DataLoader<Pokemons>>(DataLoader.Init)
     val pokemons = _pokemons.asStateFlow()
 
@@ -43,5 +46,9 @@ class PikaViewModel(private val apiRepository: ApiRepository, private val dataHo
     fun selectPokemon(model: Result, color: Color) {
         dataHolder.pokemonColor = color
         dataHolder.selectedPokemon = model
+    }
+
+    fun updateSelection(category: String) {
+        _selectedCategory.value = category
     }
 }

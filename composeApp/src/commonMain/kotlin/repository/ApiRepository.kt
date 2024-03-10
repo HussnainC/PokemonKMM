@@ -7,6 +7,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import models.Pokemons
+import models.PokiDetails
 import sealdClasses.DataLoader
 import webApi.ApiClient
 
@@ -20,6 +21,11 @@ class ApiRepository(private val apiClient: ApiClient) {
                 result.id = index + 1
             }
         }
+        emit(DataLoader.Success(result))
+    }.flowOn(Dispatchers.IO)
+
+    fun loadPokemonDetail(pokemon: String) = flow<DataLoader<PokiDetails>> {
+        val result = apiClient.client.get("$BASE_URL/pokemon/${pokemon}").body<PokiDetails>()
         emit(DataLoader.Success(result))
     }.flowOn(Dispatchers.IO)
 

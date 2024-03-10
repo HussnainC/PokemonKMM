@@ -27,12 +27,12 @@ fun NavigationContent() = PreComposeApp {
             navTransition = NavTransition(
                 createTransition = fadeIn(
                     animationSpec = tween(
-                        200,
+                        500,
                         easing = LinearEasing
                     )
                 ), destroyTransition = fadeOut(
                     animationSpec = tween(
-                        200,
+                        500,
                         easing = LinearEasing
                     )
                 )
@@ -49,7 +49,7 @@ fun NavigationContent() = PreComposeApp {
                 MainScreen(navigator)
             }
 
-            scene(route = Destinations.Detail.name ) {
+            scene(route = Destinations.Detail.name) {
                 DetailScreen(navigator)
             }
         }

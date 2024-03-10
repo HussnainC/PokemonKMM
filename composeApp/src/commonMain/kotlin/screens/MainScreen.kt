@@ -1,12 +1,7 @@
 package screens
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -42,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.kmpalette.loader.NetworkLoader
 import com.kmpalette.rememberDominantColorState
 import components.ColorBackground
+import components.Loader
 import components.PokemonWaterMark
 import enums.Destinations
 import io.kamel.image.KamelImage
@@ -113,29 +107,7 @@ fun MainScreen(
                 )
 
                 if (isLoading) {
-                    val rotationAnimation by rememberInfiniteTransition(label = "Rotation Animation").animateFloat(
-                        initialValue = 0f,
-                        targetValue = 360f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 1000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart
-                        ), label = "Rotation Animation"
-                    )
-                    val scaleAnimation by rememberInfiniteTransition(label = "Scale Animation").animateFloat(
-                        initialValue = 1f,
-                        targetValue = 1.2f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 500, easing = LinearEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ), label = "Scale Animation"
-                    )
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PokemonWaterMark(
-                            modifier = Modifier.scale(scaleAnimation).size(70.dp).alpha(0.6f)
-                                .rotate(rotationAnimation),
-                            color = Color.Gray
-                        )
-                    }
+                    Loader(70.dp)
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
@@ -145,9 +117,7 @@ fun MainScreen(
                         items(pokemons, key = Result::id) {
                             PokiItem(it, onItemClick = { model, color ->
                                 viewModel.selectPokemon(model, color)
-                                navigator.navigate(
-                                    Destinations.Detail.name
-                                )
+                                navigator.navigate(Destinations.Detail.name)
                             })
                         }
                     }
@@ -179,13 +149,12 @@ private fun PokiItem(item: Result, onItemClick: (Result, Color) -> Unit) {
         }
     }
 
-
     val paletteState =
         rememberDominantColorState(loader = NetworkLoader())
+
     LaunchedEffect(url) {
         paletteState.updateFrom(Url(url))
     }
-
 
 
     Card(
